@@ -28,6 +28,9 @@ show_pages(
         Section(name="Intrări", icon="🛒"),
         Page("other_pages/inflow/invoices.py", "Listă Facturi"),
         Page("other_pages/inflow/invoices_create.py", "Încarcă Factură"),
+        Section(name="Tratamente contabile", icon="🧮"),
+        Page("other_pages/transactions/transaction_templates.py", "Tratamente contabile"),
+        Page("other_pages/transactions/transaction_template_create.py", "Creează Tranzacție"),
 
     ]
 )
