@@ -1,7 +1,7 @@
 import uuid
 import streamlit as st
 
-from api_client.transaction_templates import create_transaction_template
+from api_client.transaction import create_transaction_template
 from components.followup_transaction_template_form import (
     FollowupTransactionTemplateForm,
 )

@@ -25,6 +25,7 @@ class InventorySelectForm:
                 "Inventare disponibile",
                 self.available_inventories["name"].values,
                 index=0,
+                key=self.unique_id + "inventory",
             )
 
             self.selected = self.available_inventories[

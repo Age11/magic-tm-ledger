@@ -3,6 +3,20 @@ import requests
 from config import TRANSACTION_TEMPLATES_PATH, URL
 
 
+def create_transaction(project_id, transaction_data):
+    return requests.post(f"{URL}/{project_id}/transactions", json=transaction_data)
+
+
+def create_transaction_from_template(project_id, transaction_template_id, amount, date):
+    return requests.post(
+        f"{URL}/{project_id}{TRANSACTION_TEMPLATES_PATH}/{transaction_template_id}/use-template",
+        json={
+            "amount": amount,
+            "transaction_date": date,
+        },
+    )
+
+
 def fetch_transaction_templates(project_id):
     print(
         f"retrieving transaction templates from {URL}/{project_id}{TRANSACTION_TEMPLATES_PATH}"

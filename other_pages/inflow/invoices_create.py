@@ -49,6 +49,9 @@ if not st.session_state.selected_project is None:
                         uuid.uuid4().hex,
                         project_id=st.session_state.selected_project["id"],
                         invoice_id=st.session_state["invoice"].invoice_id,
+                        invoice_date=st.session_state["invoice"].invoice_date.strftime(
+                            "%Y-%m-%d"
+                        ),
                     )
                 )
 

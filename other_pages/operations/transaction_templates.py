@@ -1,6 +1,6 @@
 import streamlit as st
 
-from api_client.transaction_templates import fetch_transaction_templates
+from api_client.transaction import fetch_transaction_templates
 
 st.title("Tratamente contabile")
 
