@@ -7,8 +7,17 @@ from api_client.invoices import create_invoice, update_invoice
 from components.invoice_form import InflowInvoiceForm
 from components.item_form import ItemForm
 
+if not "selected_project" in st.session_state.keys():
+    st.session_state["selected_project"] = None
+
 if not "invoice" in st.session_state.keys():
     st.session_state["invoice"] = None
+
+if not "invoice_client_id" in st.session_state.keys():
+    st.session_state["invoice_client_id"] = None
+
+if not "invoice_suppliers" in st.session_state.keys():
+    st.session_state["invoice_suppliers"] = None
 
 if not "invoice_items" in st.session_state.keys():
     st.session_state["invoice_items"] = []
@@ -16,52 +25,48 @@ if not "invoice_items" in st.session_state.keys():
 if not "invoice_saved" in st.session_state.keys():
     st.session_state["invoice_saved"] = False
 
+if not "available_inventories" in st.session_state.keys():
+    st.session_state["available_inventories"] = None
+
+if not "available_templates" in st.session_state.keys():
+    st.session_state["available_templates"] = None
+
 
 st.title("Facturi intrări")
 
 if not st.session_state.selected_project is None:
 
-    st.session_state["invoice_client_id"] = projects.get_own_organization(
-        st.session_state.selected_project["id"]
-    )[0]["id"]
+    st.session_state["invoice_client_id"] = (
+        st.session_state.api_client.projects.get_own_organization()[0]["id"]
+    )
 
     st.session_state["invoice_suppliers"] = pd.DataFrame(
-        third_parties.fetch_org_suppliers(st.session_state.selected_project["id"])
+        st.session_state.api_client.third_parties.fetch_suppliers()
+    )
+
+    st.session_state["available_inventories"] = pd.DataFrame(
+        st.session_state.api_client.inventories.fetch()
+    )
+
+    st.session_state["available_templates"] = pd.DataFrame(
+        st.session_state.api_client.transactions.fetch_transaction_templates()
     )
 
     with st.container():
         st.write("Detalii factură")
         if st.session_state["invoice"] is None:
             st.session_state["invoice"] = InflowInvoiceForm(
-                uuid.uuid4().hex,
-                st.session_state.selected_project["id"],
                 st.session_state["invoice_suppliers"],
                 st.session_state["invoice_client_id"],
+                st.session_state["available_inventories"],
+                st.session_state["available_templates"],
             )
         st.session_state["invoice"].render()
-
-    with st.container():
-        if st.session_state["invoice"].saved:
-            st.title("Articole factură")
-            if st.button("Adauga articol"):
-                st.session_state["invoice_items"].append(
-                    ItemForm(
-                        uuid.uuid4().hex,
-                        project_id=st.session_state.selected_project["id"],
-                        invoice_id=st.session_state["invoice"].invoice_id,
-                        invoice_date=st.session_state["invoice"].invoice_date.strftime(
-                            "%Y-%m-%d"
-                        ),
-                    )
-                )
-
-            for item_form in st.session_state["invoice_items"]:
-                item_form.render()
-        else:
-            st.info("Salvează factura pentru a adăuga articole")
 
     with st.container():
         if st.button("Factura Noua"):
             st.session_state["invoice"] = None
             st.session_state["invoice_items"] = []
             st.session_state["invoice_saved"] = False
+else:
+    st.write("Selectează un proiect pentru a vedea facturile")

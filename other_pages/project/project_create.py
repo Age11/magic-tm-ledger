@@ -15,7 +15,7 @@ with st.form("project-create-form"):
     if vat == "TVA la facturare":
         project_data["vat_mode"] = "on_invoice"
     if vat == "TVA la încasare":
-        project_data["vat_mode"] = "on_payment"
+        project_data["vat_mode"] = "on_cash_in"
     st.header("Detalii adresă")
     for key in address_labels.keys():
         project_data[key] = st.text_input(address_labels[key])

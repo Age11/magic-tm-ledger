@@ -16,6 +16,7 @@ class TransactionForm:
         self.currency = None
         self.transaction_date = None
         self.details = None
+        self.tx_type = None
 
     def to_dict(self):
         return {
@@ -26,6 +27,7 @@ class TransactionForm:
             "currency": self.currency,
             "transaction_date": self.transaction_date.strftime("%Y-%m-%d"),
             "details": self.details,
+            "tx_type": self.tx_type,
         }
 
     def render(self):
@@ -67,6 +69,24 @@ class TransactionForm:
                 "Data tranzacției",
                 self.transaction_date,
                 key=self.unique_id + "transaction_date",
+            )
+            self.tx_type = st.selectbox(
+                "Tipul tranzacției",
+                [
+                    "intrări",
+                    "ieșiri",
+                    "diverse",
+                    "ajustări",
+                    "salarii",
+                    "TVA-plată",
+                    "TVA-încasare",
+                    "bancă",
+                    "casă",
+                    "închidere",
+                    "decont",
+                ],
+                index=0,
+                key=self.unique_id + "tx_type",
             )
             self.details = st.text_area(
                 "Detalii", self.details, key=self.unique_id + "details"

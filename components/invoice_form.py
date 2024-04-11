@@ -1,17 +1,18 @@
+import uuid
+
 import streamlit as st
 
 from api_client.invoices import create_invoice
+from components.item_form import ItemForm
 
 
 class InflowInvoiceForm:
-    def __init__(self, unique_id, project_id, suppliers, client):
-        self.unique_id = unique_id
+    def __init__(self, suppliers, client, available_inventories, available_templates):
+        self.unique_id = uuid.uuid4().hex
         self.suppliers = suppliers
-        self.client = client
+        self.invoice_id = None
         self.saved = False
         self.updated = False
-        self.project_id = project_id
-        self.invoice_id = None
 
         self.serial_number = None
         self.invoice_date = None
@@ -23,8 +24,12 @@ class InflowInvoiceForm:
         self.vat_amount = None
         self.issuer_name = None
 
+        self.inventory_items = []
+        self.available_inventories = available_inventories
+        self.available_templates = available_templates
+
     def to_dict(self):
-        data_dict = {
+        invoice_data_dict = {
             "serial_number": self.serial_number,
             "invoice_date": self.invoice_date.strftime("%Y-%m-%d"),
             "due_date": self.due_date.strftime("%Y-%m-%d"),
@@ -36,13 +41,64 @@ class InflowInvoiceForm:
             "issuer_name": self.issuer_name,
         }
 
-        for key, value in data_dict.items():
+        for key, value in invoice_data_dict.items():
             print(f"{key}: {type(value)}")
 
-        return data_dict
+        return invoice_data_dict
+
+    def save(self):
+        if all(
+            [
+                self.serial_number,
+                self.invoice_date,
+                self.due_date,
+                self.supplier,
+                self.client,
+                self.currency,
+                self.amount,
+                self.vat_amount,
+                self.issuer_name,
+            ]
+        ):
+            self.saved = True
+            self.invoice_id = st.session_state.api_client.invoices.create(
+                self.to_dict()
+            )
+            for item in self.inventory_items:
+                item.invoice_id = self.invoice_id
+        else:
+            st.error("Toate câmpurile sunt obligatorii")
+
+    def update_invoice(self):
+        if st.button("Actualizează", key=self.unique_id + "update"):
+            if all(
+                [
+                    self.serial_number,
+                    self.invoice_date,
+                    self.due_date,
+                    self.supplier,
+                    self.client,
+                    self.currency,
+                    self.amount,
+                    self.issuer_name,
+                ]
+            ):
+                self.updated = True
+                print(self.to_dict())
+            else:
+                st.error("Toate câmpurile sunt obligatorii")
+
+    def append_inventory_item(self):
+        self.inventory_items.append(
+            ItemForm(
+                project_id=st.session_state.selected_project["id"],
+                invoice_id=self.invoice_id,
+                invoice_date=self.invoice_date.strftime("%Y-%m-%d"),
+            )
+        )
 
     def render(self):
-        with st.container():
+        with st.container(border=True):
             self.serial_number = st.text_input(
                 "Seria", self.serial_number, key=self.unique_id + "serial-number"
             )
@@ -75,46 +131,19 @@ class InflowInvoiceForm:
             )
 
             if not self.saved:
-                if st.button("Salvează", key=self.unique_id + "save"):
-                    if all(
-                        [
-                            self.serial_number,
-                            self.invoice_date,
-                            self.due_date,
-                            self.supplier,
-                            self.client,
-                            self.currency,
-                            self.amount,
-                            self.vat_amount,
-                            self.issuer_name,
-                        ]
-                    ):
-                        self.saved = True
-                        self.invoice_id = create_invoice(
-                            self.project_id, self.to_dict()
-                        )
+                st.button(
+                    "Salvează",
+                    key=self.unique_id + "save",
+                    on_click=lambda: self.save(),
+                )
 
-                    else:
-                        st.error("Toate câmpurile sunt obligatorii")
+            st.title("Articole factură")
+
+            if self.saved:
+                if len(self.inventory_items) > 0:
+                    for item_form in self.inventory_items:
+                        item_form.render()
+                if st.button("Adaugă articol", on_click=self.append_inventory_item):
+                    print(self.inventory_items)
             else:
-                if st.button("Actualizează", key=self.unique_id + "update"):
-                    if all(
-                        [
-                            self.serial_number,
-                            self.invoice_date,
-                            self.due_date,
-                            self.supplier,
-                            self.client,
-                            self.currency,
-                            self.amount,
-                            self.issuer_name,
-                        ]
-                    ):
-                        self.updated = True
-                        print(self.to_dict())
-                    else:
-                        st.error("Toate câmpurile sunt obligatorii")
-            if self.saved and not self.updated:
-                st.success("Factura a fost salvată")
-            elif self.updated:
-                st.success("Factura a fost actualizată")
+                st.info("Salvează factura pentru a adăuga articole.")

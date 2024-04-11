@@ -12,6 +12,7 @@ class FollowupTransactionTemplateForm:
         self.operation = None
         self.details = None
         self.ready = False
+        self.tx_type = None
 
     def to_dict(self):
         return {
@@ -19,6 +20,7 @@ class FollowupTransactionTemplateForm:
             "credit_account": self.credit_account,
             "operation": self.operation,
             "details": self.details,
+            "tx_type": self.tx_type,
         }
 
     def render(self):
@@ -36,7 +38,24 @@ class FollowupTransactionTemplateForm:
                 )
 
             self.operation = st.text_input("Operație", key=self.unique_id + "operation")
-
+            self.tx_type = st.selectbox(
+                "Tipul tranzacției",
+                [
+                    "intrări",
+                    "ieșiri",
+                    "diverse",
+                    "ajustări",
+                    "salarii",
+                    "TVA-plată",
+                    "TVA-încasare",
+                    "bancă",
+                    "casă",
+                    "închidere",
+                    "decont",
+                ],
+                index=0,
+                key=self.unique_id + "tx_type",
+            )
             self.details = st.text_area("Detalii", key=self.unique_id + "description")
 
             if all(

@@ -18,6 +18,7 @@ class TransactionTemplateForm:
         self.creditor_account = None
         self.currency = None
         self.details = None
+        self.main_tx_type = None
 
         self.main_transaction = None
         self.followup_transactions = []
@@ -53,6 +54,24 @@ class TransactionTemplateForm:
                     "Cont creditor", key=self.unique_id + "creditor_account"
                 )
             self.currency = st.selectbox("Moneda", ["RON", "EUR"], index=0)
+            self.main_tx_type = st.selectbox(
+                "Tipul tranzacției",
+                [
+                    "intrări",
+                    "ieșiri",
+                    "diverse",
+                    "ajustări",
+                    "salarii",
+                    "TVA-plată",
+                    "TVA-încasare",
+                    "bancă",
+                    "casă",
+                    "închidere",
+                    "decont",
+                ],
+                index=0,
+                key=self.unique_id + "tx_type",
+            )
             self.details = st.text_area("Detalii", key=self.unique_id + "details")
 
             if all(
@@ -63,6 +82,7 @@ class TransactionTemplateForm:
                     self.creditor_account,
                     self.currency,
                     self.details,
+                    self.main_tx_type,
                 ]
             ):
                 self.main_transaction = {
@@ -70,6 +90,7 @@ class TransactionTemplateForm:
                     "credit_account": self.creditor_account,
                     "currency": self.currency,
                     "details": self.details,
+                    "tx_type": self.main_tx_type,
                 }
             else:
                 st.warning("Completează toate câmpurile")
