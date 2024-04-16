@@ -41,3 +41,7 @@ class Invoices:
         print(f"Retrieved {payable}")
         return payable
 
+    def solve_payment(self, invoice_id):
+        print(f"Solving payment for invoice {invoice_id}")
+        requests.put(f"{self.url_path}{INVOICES_PATH}/{invoice_id}/pay")
+

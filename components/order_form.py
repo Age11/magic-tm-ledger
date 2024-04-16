@@ -135,5 +135,6 @@ class OrderForm:
             if len(self.order_items) > 0:
                 for order_item in self.order_items:
                     order_item.render()
+
             if self.invoice_saved:
                 st.button("Adaugă articol", on_click=self.append_order_item)

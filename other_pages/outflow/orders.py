@@ -40,13 +40,19 @@ if "selected_project" in st.session_state.keys():
 
         st.session_state["available_templates"] = pd.DataFrame(
             st.session_state.api_client.transactions.fetch_transaction_templates_by_type(
-                "ieșiri"
+                ["ieșiri"]
             )
         )
 
         if "order_form" not in st.session_state.keys():
             st.session_state["order_form"] = OrderForm()
         st.session_state["order_form"].render()
+
+        with st.container():
+            st.button(
+                "Comanda Noua",
+                on_click=lambda: st.session_state["order_form"].__init__(),
+            )
 
 
 # pass search function to searchbox

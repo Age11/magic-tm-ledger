@@ -48,7 +48,7 @@ if st.session_state.selected_project is not None:
 
     st.session_state["available_templates"] = pd.DataFrame(
         st.session_state.api_client.transactions.fetch_transaction_templates_by_type(
-            "intrări"
+            ["intrări"]
         )
     )
 
