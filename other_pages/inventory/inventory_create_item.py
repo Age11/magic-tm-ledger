@@ -1,38 +1,26 @@
 import uuid
 
+import pandas as pd
 import streamlit as st
 
-from api_client.inventory import create_inventory_item
+from components.inventory_item_form import InventoryItemForm
 
+if "selected_inventory" not in st.session_state.keys():
+    st.session_state["selected_inventory"] = None
 
-st.title(f"Adaugă un produs în inventar {st.session_state["selected_inventory"].values[0][1]}")
+if "current_inventory_item_sale" not in st.session_state.keys():
+    st.session_state["current_inventory_item_for_sale"] = False
 
 if "selected_project" in st.session_state.keys():
-    if not st.session_state["selected_project"] is None:
-        with st.form("create-inventory-form"):
+    if st.session_state["selected_project"] is not None:
+        st.session_state["available_inventories"] = pd.DataFrame(
+            st.session_state.api_client.inventories.fetch()
+        )
 
-            inventory_item_data = {}
-            inventory_item_data["name"] = st.text_input("Nume")
-            inventory_item_data["description"] = st.text_area("Descriere")
-            inventory_item_data["quantity"] = st.number_input("Cantitate", min_value=1)
-            inventory_item_data["measurement_unit"] = st.text_input("Unitate de măsură")
-            inventory_item_data["acquisition_price"] = st.number_input(
-                "Preț de achiziție", min_value=0
-            )
-            inventory_item_data["vat_rate"] = st.number_input(
-                "Rată TVA", min_value=0, max_value=100
-            )
+        st.session_state["available_templates"] = pd.DataFrame(
+            st.session_state.api_client.transactions.fetch_transaction_templates()
+        )
 
-            #TODO remove hack
-            inventory_item_data["invoice_id"] = -1
-
-            if st.form_submit_button("Salvează"):
-                if all(inventory_item_data.values()):
-                    create_inventory_item(
-                        st.session_state["selected_project"]["id"], st.session_state["selected_inventory"].iloc[0]['id'], inventory_item_data
-                    )
-                    st.info("Produs adăugat în inventar")
-
-
-                else:
-                    st.error("Toate câmpurile sunt obligatorii")
+        if "current_inventory_item_form" not in st.session_state.keys():
+            st.session_state["current_inventory_item_form"] = InventoryItemForm()
+        st.session_state["current_inventory_item_form"].render()

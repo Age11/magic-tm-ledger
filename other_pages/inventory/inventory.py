@@ -28,7 +28,7 @@ if "selected_project" in st.session_state.keys():
             if not selected.empty:
                 st.session_state["selected_inventory"] = selected
                 inventory = pd.DataFrame(
-                    inventory_api.fetch_inventory_items(
+                    inventory_api.fetch_all_inventory_items(
                         st.session_state["selected_project"]["id"],
                         selected["id"].values[0],
                     ),

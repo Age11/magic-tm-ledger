@@ -26,6 +26,17 @@ def fetch_inventory_items(project_id, inventory_id):
     return items
 
 
+def fetch_all_inventory_items(project_id, inventory_id):
+    print(
+        f"retrieving all inventory items from {URL}/{project_id}{INVENTORY_PATH}/{inventory_id}{ITEMS_PATH}/all"
+    )
+    items = requests.get(
+        f"{URL}/{project_id}{INVENTORY_PATH}/{inventory_id}/{ITEMS_PATH}/all"
+    ).json()
+    print(f"Retrieved {items}")
+    return items
+
+
 def create_inventory_item(project_id, invenory_id, item_data):
     print(f"Creating inventory item with the following data: {item_data}")
     requests.post(

@@ -14,8 +14,11 @@ class Transactions:
         return requests.post(f"{self.url_path}/transactions", json=transaction_data)
 
     def create_transaction_from_template(self, transaction_template_id, amount, date):
+        print(
+            f"Post at {self.url_path}{TRANSACTION_TEMPLATES_PATH}{transaction_template_id}/use-template"
+        )
         return requests.post(
-            f"{self.url_path}{TRANSACTION_TEMPLATES_PATH}/{transaction_template_id}/use-template",
+            f"{self.url_path}{TRANSACTION_TEMPLATES_PATH}{transaction_template_id}/use-template",
             json={
                 "amount": amount,
                 "transaction_date": date,
@@ -28,6 +31,16 @@ class Transactions:
         )
         transaction_templates = requests.get(
             f"{self.url_path}{TRANSACTION_TEMPLATES_PATH}"
+        ).json()
+        print(f"Retrieved {transaction_templates}")
+        return transaction_templates
+
+    def fetch_transaction_templates_by_type(self, tx_type):
+        print(
+            f"retrieving inflow transaction templates from {self.url_path}{TRANSACTION_TEMPLATES_PATH}/{tx_type}"
+        )
+        transaction_templates = requests.get(
+            f"{self.url_path}{TRANSACTION_TEMPLATES_PATH}/{tx_type}"
         ).json()
         print(f"Retrieved {transaction_templates}")
         return transaction_templates

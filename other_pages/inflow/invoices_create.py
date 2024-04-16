@@ -1,11 +1,9 @@
 import streamlit as st
-import uuid
+
 import pandas as pd
 
-from api_client import projects, third_parties
-from api_client.invoices import create_invoice, update_invoice
 from components.invoice_form import InflowInvoiceForm
-from components.item_form import ItemForm
+
 
 if not "selected_project" in st.session_state.keys():
     st.session_state["selected_project"] = None
@@ -34,7 +32,7 @@ if not "available_templates" in st.session_state.keys():
 
 st.title("Facturi intrări")
 
-if not st.session_state.selected_project is None:
+if st.session_state.selected_project is not None:
 
     st.session_state["invoice_client_id"] = (
         st.session_state.api_client.projects.get_own_organization()[0]["id"]
@@ -49,7 +47,9 @@ if not st.session_state.selected_project is None:
     )
 
     st.session_state["available_templates"] = pd.DataFrame(
-        st.session_state.api_client.transactions.fetch_transaction_templates()
+        st.session_state.api_client.transactions.fetch_transaction_templates_by_type(
+            "intrări"
+        )
     )
 
     with st.container():

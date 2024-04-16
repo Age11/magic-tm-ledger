@@ -29,3 +29,15 @@ class Invoices:
         print(f"Updating invoice with the following data: {invoice_data}")
         print(f"Updating invoice with the following data: {invoice_id}")
 
+    def fetch_due_receivable(self):
+        print(f"Retrieving receivables from {self.url_path}{INVOICES_PATH}/receivable")
+        receivable = requests.get(f"{self.url_path}{INVOICES_PATH}/receivable").json()
+        print(f"Retrieved {receivable}")
+        return receivable
+
+    def fetch_due_payable(self):
+        print(f"Retrieving payables from {self.url_path}{INVOICES_PATH}/payable")
+        payable = requests.get(f"{self.url_path}{INVOICES_PATH}/payable").json()
+        print(f"Retrieved {payable}")
+        return payable
+

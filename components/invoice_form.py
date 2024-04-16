@@ -1,9 +1,7 @@
 import uuid
 
 import streamlit as st
-
-from api_client.invoices import create_invoice
-from components.item_form import ItemForm
+from components.invoice_item_form import InvoiceItemForm
 
 
 class InflowInvoiceForm:
@@ -39,6 +37,7 @@ class InflowInvoiceForm:
             "amount": round(float(self.amount), 2),
             "vat_amount": round(float(self.vat_amount), 2),
             "issuer_name": self.issuer_name,
+            "invoice_type": "plată",
         }
 
         for key, value in invoice_data_dict.items():
@@ -90,10 +89,11 @@ class InflowInvoiceForm:
 
     def append_inventory_item(self):
         self.inventory_items.append(
-            ItemForm(
+            InvoiceItemForm(
                 project_id=st.session_state.selected_project["id"],
                 invoice_id=self.invoice_id,
                 invoice_date=self.invoice_date.strftime("%Y-%m-%d"),
+                invoice_currency=self.currency,
             )
         )
 
