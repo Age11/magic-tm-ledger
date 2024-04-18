@@ -2,7 +2,7 @@ import uuid
 
 import streamlit as st
 
-
+from components.invoice_item_form import InvoiceItemForm
 from components.order_item_form import OrderItemForm
 
 
@@ -26,10 +26,23 @@ class OrderForm:
         self.issuer_name = None
         self.invoice_client_id = None
 
-    def append_order_item(self):
-        self.order_items.append(OrderItemForm(self.project_id, self.invoice_date))
+    def append_item_to_order(self):
+        self.order_items.append(
+            OrderItemForm(self.project_id, self.invoice_date, self.invoice_id)
+        )
         print(len(self.order_items))
         print(self.order_items)
+
+    def append_service_to_order(self):
+        self.order_items.append(
+            InvoiceItemForm(
+                project_id=st.session_state.selected_project["id"],
+                invoice_id=self.invoice_id,
+                invoice_date=self.invoice_date.strftime("%Y-%m-%d"),
+                invoice_currency=self.currency,
+                is_order=True,
+            )
+        )
 
     def save(self):
         if all(
@@ -137,4 +150,8 @@ class OrderForm:
                     order_item.render()
 
             if self.invoice_saved:
-                st.button("Adaugă articol", on_click=self.append_order_item)
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    st.button("Adaugă articol", on_click=self.append_item_to_order)
+                with c2:
+                    st.button("Adaugă serviciu", on_click=self.append_service_to_order)

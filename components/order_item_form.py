@@ -15,6 +15,7 @@ class OrderItemForm:
         self,
         project_id,
         order_date,
+        invoice_id,
     ):
         self.project_id = project_id
         self.unique_id = uuid.uuid4().hex
@@ -34,6 +35,7 @@ class OrderItemForm:
         self.vat_rate = 0
         self.units_to_decrease = 0
         self.order_date = order_date.strftime("%Y-%m-%d")
+        self.invoice_id = invoice_id
 
         self.saved = False
 
@@ -42,7 +44,7 @@ class OrderItemForm:
 
     def save(self):
         #Decrease the stock
-        st.session_state.api_client.inventories.decrease_stock(item_id=self.selected_inventory_items['id'].iloc[0], inventory_id=self.inventory_id, quantity=self.units_to_decrease)
+        st.session_state.api_client.inventories.decrease_stock(item_id=self.selected_inventory_items['id'].iloc[0], inventory_id=self.inventory_id, quantity=self.units_to_decrease, invoice_id=self.invoice_id)
         self.saved = True
         #Record the transactions
         if self.use_template:

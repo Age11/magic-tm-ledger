@@ -45,3 +45,14 @@ class Invoices:
         print(f"Solving payment for invoice {invoice_id}")
         requests.put(f"{self.url_path}{INVOICES_PATH}/{invoice_id}/pay")
 
+    def fetch_all_receivable_by_date(self, date):
+        print(f"Retrieving receivables from {self.url_path}{INVOICES_PATH}/{date}/receivable")
+        receivable = requests.get(f"{self.url_path}{INVOICES_PATH}/{date}/receivable").json()
+        print(f"Retrieved {receivable}")
+        return receivable
+
+    def fetch_all_payable_by_date(self, date):
+        print(f"Retrieving receivables from {self.url_path}{INVOICES_PATH}/{date}/payable")
+        payable = requests.get(f"{self.url_path}{INVOICES_PATH}/{date}/payable").json()
+        print(f"Retrieved {payable}")
+        return payable

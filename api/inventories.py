@@ -39,14 +39,17 @@ class Inventories:
             json=item_data,
         )
 
-    def decrease_stock(self, item_id, inventory_id, quantity):
+    def decrease_stock(self, item_id, inventory_id, quantity, invoice_id):
         print(
             f"Decreasing stock for item {item_id} in inventory {inventory_id} by {quantity}"
         )
+        print(
+            f"Put at {self.url_path}{INVENTORY_PATH}/{inventory_id}{ITEMS_PATH}/{item_id}/decrease-stock/"
+        )
+
         requests.put(
-            # / 1 / inventories / 1 / items / 1 / decrease - stock /
             f"{self.url_path}{INVENTORY_PATH}/{inventory_id}{ITEMS_PATH}/{item_id}/decrease-stock/",
-            json={"quantity": quantity},
+            json={"quantity": quantity, "invoice_id": invoice_id},
         )
 
     def update_inventory_item(project_id, inventory_id, item_data):

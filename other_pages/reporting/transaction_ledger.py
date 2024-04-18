@@ -9,7 +9,7 @@ if not "selected_project" in st.session_state.keys():
 st.title("Jurnal Tranzacții")
 
 transactions = pd.DataFrame(
-    fetch_all_transactions(st.session_state.selected_project["id"])
+    st.session_state.api_client.reports.fetch_all_transactions()
 )
 
 st.write(transactions)

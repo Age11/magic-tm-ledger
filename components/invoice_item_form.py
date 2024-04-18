@@ -11,12 +11,15 @@ from components.transaction_card import TransactionCard
 
 class InvoiceItemForm:
 
-    def __init__(self, project_id, invoice_id, invoice_date, invoice_currency):
+    def __init__(
+        self, project_id, invoice_id, invoice_date, invoice_currency, is_order=False
+    ):
         self.project_id = project_id
         self.unique_id = uuid.uuid4().hex
         self.invoice_id = invoice_id
         self.invoice_date = invoice_date
         self.currency = invoice_currency
+        self.is_order = is_order
 
         self.available_templates = st.session_state.available_templates
         self.available_inventories = st.session_state.available_inventories
@@ -44,15 +47,14 @@ class InvoiceItemForm:
         return all(self.to_dict().values())
 
     def save(self):
-        if self.add_to_inventory:
-            if self.complete():
 
-                st.session_state.api_client.inventories.create_inventory_item(
-                    self.inventory_id, self.to_dict()
-                )
-                self.item_saved = True
-            else:
-                st.info("Toate câmpurile sunt obligatorii pentru a salva un articol.")
+        if self.complete():
+            st.session_state.api_client.inventories.create_inventory_item(
+                self.inventory_id, self.to_dict()
+            )
+            self.item_saved = True
+        else:
+            st.info("Toate câmpurile sunt obligatorii pentru a salva un articol.")
 
         if self.use_template:
             st.session_state.api_client.transactions.create_transaction_from_template(
@@ -197,7 +199,7 @@ class InvoiceItemForm:
 
     def to_dict(self):
 
-        return {
+        res = {
             "name": self.name,
             "description": self.description,
             "measurement_unit": self.measurement_unit,
@@ -209,3 +211,8 @@ class InvoiceItemForm:
             "inventory_id": int(self.inventory_id),
             "invoice_id": int(self.invoice_id),
         }
+
+        if self.is_order:
+            res["entry_type"] = "comandă"
+
+        return res
