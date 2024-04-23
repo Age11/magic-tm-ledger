@@ -7,6 +7,7 @@ import streamlit as st
 from api_client.transaction import create_transaction_from_template
 from streamlit_searchbox import st_searchbox
 
+from components.show_transaction_template_form import ShowTemplateForm
 from components.transaction_card import TransactionCard
 
 class OrderItemForm:
@@ -22,10 +23,13 @@ class OrderItemForm:
 
         self.available_inventories = st.session_state.available_inventories
 
-        self.use_template = False
+        self.use_main_template = False
+        self.use_second_template = False
+        self.main_template = None
+        self.second_template = None
         self.available_templates = st.session_state.available_templates
-        self.selected_template_id = None
-        self.selected_name = None
+        self.secondary_templates = st.session_state.secondary_templates
+
 
         self.name = ""
         self.description = ""
@@ -37,24 +41,22 @@ class OrderItemForm:
         self.order_date = order_date.strftime("%Y-%m-%d")
         self.invoice_id = invoice_id
 
+        self.total_sale_price = 0
+        self.total_acquisition_cost = 0
+
         self.saved = False
 
     def complete(self):
         return all(self.to_dict().values())
 
     def save(self):
-        #Decrease the stock
         st.session_state.api_client.inventories.decrease_stock(item_id=self.selected_inventory_items['id'].iloc[0], inventory_id=self.inventory_id, quantity=self.units_to_decrease, invoice_id=self.invoice_id)
         self.saved = True
-        #Record the transactions
-        if self.use_template:
-            st.session_state.api_client.transactions.create_transaction_from_template(
-                transaction_template_id=self.selected_template_id,
-                amount=self.total,
-                # TODO
-                date=self.order_date,
-            )
-            self.template_saved = True
+        if self.use_main_template:
+            self.main_template.save()
+        if self.use_second_template:
+            self.second_template.save()
+
 
 
     def search_inventory(self, searchterm):
@@ -69,7 +71,7 @@ class OrderItemForm:
             if self.available_inventories.empty:
                 st.write("No available inventories.")
             else:
-                st.write("Selectează un inventar")
+                st.write("Selectează o gestiune")
                 self.selected_name = st.selectbox(
                     label="Select Inventory",
                     options=self.available_inventories.name.tolist(),
@@ -81,14 +83,14 @@ class OrderItemForm:
                     ]["id"].iloc[0]
 
                 self.selected_inventory_items = pd.DataFrame(st.session_state.api_client.inventories.fetch_inventory_items(
-                     self.inventory_id
+                    self.inventory_id
                 ))
 
             if self.selected_inventory_items is not None:
                 selected_value = st_searchbox(
                     self.search_inventory,
                     key="searchbox" + self.unique_id,
-                    placeholder="Caută produs în inventarul selectat",
+                    placeholder="Caută produs în gestiunea selectată",
                 )
 
             if selected_value:
@@ -110,7 +112,8 @@ class OrderItemForm:
                     self.units_to_decrease = st.number_input(
                         "Cantitate", key=self.unique_id + "quantity"
                     )
-                    self.total = round(self.units_to_decrease * selected_item['sale_price'], 2)
+                    self.total_sale_price = round(self.units_to_decrease * selected_item['sale_price'], 2)
+                    self.total_acquisition_cost = round(self.units_to_decrease * selected_item['acquisition_price'], 2)
                 with col1:
                     st.write("Stoc rămas")
                     st.write(f"Cantitate: {self.item_quantity - self.units_to_decrease}")
@@ -126,60 +129,25 @@ class OrderItemForm:
                         st.write(f"Total TVA: {round(self.units_to_decrease * selected_item['acquisition_price'] * selected_item['vat_rate'] / 100, 2)}")
                         st.write(f"Total cu TVA: {round(self.units_to_decrease * selected_item['sale_price'] + self.units_to_decrease * selected_item['sale_price'] * selected_item['vat_rate'] / 100,2)}")
 
-
-
-            self.use_template = st.checkbox(
+            self.use_main_template = st.checkbox(
                 "Selectează tratament contabil predefinit",
                 key=self.unique_id + "add_template",
             )
 
-            if self.use_template:
-                selected_template = st.selectbox(
-                    "Șablon",
-                    self.available_templates["name"],
-                    key=self.unique_id + "template",
-                    index=0,
-                )
+            if self.use_main_template:
+                self.main_template = ShowTemplateForm(available_templates=self.available_templates, date=self.order_date, amount=self.total_sale_price)
+                self.main_template.render()
 
-                self.selected_template_id = (
-                    self.available_templates.loc[
-                        st.session_state.available_templates["name"]
-                        == selected_template,
-                        "id",
-                    ].iloc[0],
-                )[0]
+            self.use_second_template = st.checkbox(
+                "Descărcare din gestiune",
+                key=self.unique_id + "add_template2",
+            )
 
-                print(self.selected_template_id)
+            if self.use_second_template:
+                self.second_template = ShowTemplateForm(available_templates=self.secondary_templates, date=self.order_date, amount=self.total_acquisition_cost)
+                self.second_template.render()
 
-                main_transaction = self.available_templates.loc[
-                    self.available_templates["name"] == selected_template,
-                    "main_transaction",
-                ].iloc[0]
 
-                self.main_transaction_card = TransactionCard(
-                    debit_account=main_transaction["debit_account"],
-                    credit_account=main_transaction["credit_account"],
-                    details=main_transaction["details"],
-                    date=self.order_date,
-                    currency=main_transaction["currency"],
-                    amount=self.total,
-                )
-
-                self.main_transaction_card.render()
-
-                for transaction in self.available_templates.loc[
-                    self.available_templates["name"] == selected_template,
-                    "followup_transactions",
-                ].iloc[0]:
-                    TransactionCard(
-                        debit_account=transaction["debit_account"],
-                        credit_account=transaction["credit_account"],
-                        details=transaction["details"],
-                        date=self.order_date,
-                        currency=main_transaction["currency"],
-                        amount=self.total,
-                        operation=transaction["operation"],
-                    ).render()
             if not self.saved:
                 st.button("Salvează modificare", key=self.unique_id + "save", on_click=self.save)
             else:

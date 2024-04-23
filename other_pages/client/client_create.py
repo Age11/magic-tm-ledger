@@ -2,9 +2,8 @@ from api_client.third_parties import create_organization
 from misc.form_labels import organization_input_labels, address_labels, bank_details
 import streamlit as st
 
-st.header("Creează un nou client")
-
-with st.form("create-supplier-organization-form"):
+with st.form("create-client-organization-form", border=True):
+    st.header("Creează un nou client")
     organization_data = {}
 
     organization_data["org_type"] = "client"

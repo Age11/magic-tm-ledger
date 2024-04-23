@@ -65,7 +65,7 @@ class InventoryItemForm:
 
     def render(self):
         with st.container(border=True):
-            st.header("Adaugă un articol în inventar")
+            st.header("Adaugă un articol în gestiune")
 
             self.name = st.text_input("Nume", key=self.unique_id + "name")
             self.description = st.text_area(
@@ -113,7 +113,7 @@ class InventoryItemForm:
                             st.write("0%")
 
             self.add_to_inventory = st.checkbox(
-                "Adaugă în inventar", key=self.unique_id + "add_to_inventory"
+                "Adaugă în gestiune", key=self.unique_id + "add_to_inventory"
             )
 
             if self.add_to_inventory:

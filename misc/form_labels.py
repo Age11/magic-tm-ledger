@@ -19,11 +19,11 @@ project_details_labels = {
     "project_name": "Nume Proiect",
     "status": "Status",
     "creation_date": "Data creației",
+    "caen_code": "Cod CAEN",
     "organization_name": "Numele Organizației",
     "cif": "C.I.F",
     "nrc": "N.R.C",
     "vat_mode": "Mod TVA",
-    "org_type": "Tip Organizație",
 }
 
 third_party_list_labels = {

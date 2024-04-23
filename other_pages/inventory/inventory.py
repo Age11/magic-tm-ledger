@@ -3,7 +3,7 @@ import streamlit as st
 from components.dataframe_with_selection import dataframe_with_selections
 import api_client.inventory as inventory_api
 
-st.title("Inventar")
+st.title("Gestiuni")
 
 if "selected_project" in st.session_state.keys():
     if not st.session_state["selected_project"] is None:
@@ -14,7 +14,7 @@ if "selected_project" in st.session_state.keys():
         st.session_state["available_inventories"] = available_inventories
         selected = None
         if not available_inventories.empty:
-            st.write("Inventare disponibile")
+            st.write("Gestiuni disponibile")
             selected = dataframe_with_selections(
                 available_inventories,
                 {
@@ -36,8 +36,8 @@ if "selected_project" in st.session_state.keys():
                 st.session_state["selected_inventory_items"] = inventory
                 st.write(inventory)
             else:
-                st.write("Selectează un inventar")
+                st.write("Selectează o gestiune")
         else:
-            st.write("Creează un inventar")
+            st.write("Creează o gestiune")
 else:
     st.error("Selectează un proiect")

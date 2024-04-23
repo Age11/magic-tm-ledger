@@ -2,7 +2,7 @@ import streamlit as st
 
 from api_client.inventory import create_inventory
 
-st.title("Creează Inventar")
+st.title("Creează Gestiune")
 
 
 if "selected_project" in st.session_state.keys():
@@ -12,7 +12,7 @@ if "selected_project" in st.session_state.keys():
             inventory_data["name"] = st.text_input("Nume")
             inventory_data["description"] = st.text_area("Descriere")
             inventory_data["inventory_method"] = st.selectbox(
-                "Metoda Inventar", ["fifo", "lifo", "cmp"], index=0
+                "Metoda Gestiune", ["fifo", "lifo", "cmp"], index=0
             )
 
             if st.form_submit_button("Salvează"):
@@ -20,6 +20,6 @@ if "selected_project" in st.session_state.keys():
                     create_inventory(
                         st.session_state["selected_project"]["id"], inventory_data
                     )
-                    st.info("Inventar creat")
+                    st.info("Gestiune creată")
                 else:
                     st.error("Toate câmpurile sunt obligatorii")

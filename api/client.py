@@ -1,3 +1,4 @@
+from api.account_balance import AccountBalance
 from api.inventories import Inventories
 from api.invoices import Invoices
 from api.projects import Projects
@@ -14,3 +15,4 @@ class Client:
         self.transactions = Transactions(project_id)
         self.third_parties = ThirdParties(project_id)
         self.projects = Projects(project_id)
+        self.account_balance = AccountBalance(project_id)

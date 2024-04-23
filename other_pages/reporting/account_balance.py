@@ -25,7 +25,64 @@ if st.session_state.selected_project is not None:
         )
     )
 
-    st.write(st.session_state.account_balance)
+    show_df = st.session_state.account_balance.copy()
+
+    st.write(
+        show_df.rename(
+            columns={
+                "analytical_account": "Cont",
+                "initial_debit": "Sold Inițial Debitor (an)",
+                "initial_credit": "Sold Inițial Creditor (an)",
+                "cumulated_debit": "Sold Debitor Cumulat",
+                "cumulated_credit": "Sold Creditor cumulat",
+                "current_turnover_debit": "Rulaj debitor perioadă",
+                "current_turnover_credit": "Rulaj creditor perioadă",
+                "total_debit_balance": "Sume Totale Debitoare",
+                "total_credit_balance": "Sume Totale Creditoare",
+                "final_debit_balance": "Sold Final Debitor",
+                "final_credit_balance": "Sold Final Creditor",
+                "processed": "Intrare închisă",
+            },
+        ).drop(
+            columns=[
+                "id",
+                "balance_date",
+                "owner_id",
+            ]
+        ),
+    )
+
+    st.header("Totaluri:")
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.write(
+            f"Sold inițial debitor: {st.session_state.account_balance.initial_debit.sum()}"
+        )
+        st.write(
+            f"Sold inițial creditor: {st.session_state.account_balance.initial_credit.sum()}"
+        )
+    with c2:
+        st.write(
+            f"Sold debitor cumulat: {st.session_state.account_balance.cumulated_debit.sum()}"
+        )
+        st.write(
+            f"Sold creditor cumulat: {st.session_state.account_balance.cumulated_credit.sum()}"
+        )
+    with c3:
+        st.write(
+            f"Rulaj debitor perioadă: {st.session_state.account_balance.current_turnover_debit.sum()}"
+        )
+
+        st.write(
+            f"Rulaj creditor perioadă: {st.session_state.account_balance.current_turnover_credit.sum()}"
+        )
+    with c4:
+        st.write(
+            f"Sume totale debitoare: {st.session_state.account_balance.total_debit_balance.sum()}"
+        )
+        st.write(
+            f"Sume totale creditoare: {st.session_state.account_balance.total_credit_balance.sum()}"
+        )
 
     if (~st.session_state.account_balance["processed"]).all():
 

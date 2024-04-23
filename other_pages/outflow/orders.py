@@ -44,6 +44,12 @@ if "selected_project" in st.session_state.keys():
             )
         )
 
+        st.session_state["secondary_templates"] = pd.DataFrame(
+            st.session_state.api_client.transactions.fetch_transaction_templates_by_type(
+                ["descărcare"]
+            )
+        )
+
         if "order_form" not in st.session_state.keys():
             st.session_state["order_form"] = OrderForm()
         st.session_state["order_form"].render()

@@ -43,6 +43,9 @@ class InvoiceItemForm:
         self.item_saved = False
         self.template_saved = False
 
+        self.total_acquisition_price = 0
+        self.total_sale_price = 0
+
     def complete(self):
         return all(self.to_dict().values())
 
@@ -59,7 +62,11 @@ class InvoiceItemForm:
         if self.use_template:
             st.session_state.api_client.transactions.create_transaction_from_template(
                 transaction_template_id=self.selected_template_id,
-                amount=self.quantity * self.acquisition_price,
+                amount=(
+                    self.quantity * self.sale_price
+                    if self.is_order
+                    else self.quantity * self.acquisition_price
+                ),
                 date=self.invoice_date,
             )
             self.template_saved = True
@@ -118,7 +125,7 @@ class InvoiceItemForm:
                             st.write("0%")
 
             self.add_to_inventory = st.checkbox(
-                "Adaugă în inventar", key=self.unique_id + "add_to_inventory"
+                "Adaugă în gestiune", key=self.unique_id + "add_to_inventory"
             )
 
             if self.add_to_inventory:
@@ -169,7 +176,11 @@ class InvoiceItemForm:
                     details=main_transaction["details"],
                     date=self.invoice_date,
                     currency=main_transaction["currency"],
-                    amount=self.acquisition_price * self.quantity,
+                    amount=(
+                        self.quantity * self.sale_price
+                        if self.is_order
+                        else self.quantity * self.acquisition_price
+                    ),
                 )
 
                 self.main_transaction_card.render()
@@ -184,7 +195,11 @@ class InvoiceItemForm:
                         details=transaction["details"],
                         date=self.invoice_date,
                         currency=main_transaction["currency"],
-                        amount=self.acquisition_price * self.quantity,
+                        amount=(
+                            self.quantity * self.sale_price
+                            if self.is_order
+                            else self.quantity * self.acquisition_price
+                        ),
                         operation=transaction["operation"],
                     ).render()
 
