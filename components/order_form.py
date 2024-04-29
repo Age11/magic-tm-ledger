@@ -142,8 +142,10 @@ class OrderForm:
                     key=self.unique_id + "save",
                     on_click=lambda: self.save(),
                 )
+                st.info("Salvează factura pentru a adăuga articole")
 
-            st.header("Articole comandă")
+            if self.invoice_saved:
+                st.header("Articole comandă")
 
             if len(self.order_items) > 0:
                 for order_item in self.order_items:

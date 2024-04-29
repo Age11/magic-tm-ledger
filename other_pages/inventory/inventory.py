@@ -34,7 +34,29 @@ if "selected_project" in st.session_state.keys():
                     ),
                 )
                 st.session_state["selected_inventory_items"] = inventory
-                st.write(inventory)
+                st.write(
+                    inventory.rename(
+                        columns={
+                            "name": "Nume",
+                            "description": "Descriere",
+                            "quantity": "Cantitate",
+                            "measurement_unit": "Unitate",
+                            "acquisition_price": "Preț unitar achiziție",
+                            "sale_price": "Preț unitar vânzare",
+                            "currency": "Monedă",
+                            "vat_rate": "TVA",
+                            "total_value": "Valoare totală",
+                            "acquisition_date": "Data achiziției",
+                        }
+                    ).drop(
+                        columns=[
+                            "id",
+                            "inventory_id",
+                            "invoice_id",
+                            "inventory_id",
+                        ]
+                    )
+                )
             else:
                 st.write("Selectează o gestiune")
         else:

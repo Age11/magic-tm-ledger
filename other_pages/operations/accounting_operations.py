@@ -17,7 +17,6 @@ if not "transaction_from_template" in st.session_state.keys():
 if st.session_state["selected_project"] is not None:
     use_template = st.checkbox("Selectează tratament contabil predefinit")
     if use_template:
-        st.write("Selectează tratament contabil")
         if st.session_state["transaction_from_template"] is None:
             st.session_state["transaction_from_template"] = (
                 TransactionFromTemplateForm()

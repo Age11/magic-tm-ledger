@@ -43,6 +43,7 @@ show_pages(
         Page("other_pages/operations/accounting_operations.py", "Articole contabile"),
         Section(name="Rapoarte", icon="📚"),
         Page("other_pages/reporting/transaction_ledger.py", "Registru Tranzacții"),
+        Page("other_pages/reporting/general_ledger.py", "Cartea Mare"),
         Page("other_pages/reporting/account_balance.py", "Balanță de verificare"),
         Page("other_pages/reporting/buying_ledger.py", "Jurnal Cumpărări"),
         Page("other_pages/reporting/selling_ledger.py", "Jurnal Vânzări"),
