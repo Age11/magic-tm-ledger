@@ -58,8 +58,6 @@ if st.session_state.selected_project is not None:
             st.session_state["invoice"] = InflowInvoiceForm(
                 st.session_state["invoice_suppliers"],
                 st.session_state["invoice_client_id"],
-                st.session_state["available_inventories"],
-                st.session_state["available_templates"],
             )
         st.session_state["invoice"].render()
 

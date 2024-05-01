@@ -3,28 +3,30 @@ from datetime import datetime
 import streamlit as st
 
 
-class InvoicePaymentCard:
+class PaymentCard:
     def __init__(self, payment):
         self.payment = payment
         self.available_templates = st.session_state.available_templates
         self.unique_id = uuid.uuid4().hex
         self.saved = False
+        self.amount_to_pay = payment["amount_due"]
 
     def save_payment(self):
-        st.session_state.api_client.invoices.solve_payment(self.payment["id"])
+        st.session_state.api_client.payments.solve_payment(self.payment["id"], self.amount_to_pay)
         st.session_state.api_client.transactions.create_transaction_from_template(
             self.selected_template_id,
-            self.payment["total_amount"],
+            self.amount_to_pay,
             self.payment["due_date"],
         )
-        self.saved = True
+        st.session_state.receivable_billing_form.clear_payment_cards()
+        st.session_state.payable_billing_form.clear_payment_cards()
 
     def render(self):
         with st.container(border=True):
             c1, c2, c3, c4 = st.columns(4)
             with c1:
-                st.write("Factura:")
-                st.write(self.payment["serial_number"])
+                st.write("Plata:")
+                st.write(self.payment["id"])
             with c2:
                 st.write("Scadența:")
                 st.write(self.payment["due_date"])
@@ -32,10 +34,10 @@ class InvoicePaymentCard:
                 st.write("Stare:")
                 st.write(self.payment["payment_status"])
             with c4:
-                st.write("Total:")
-                st.write(f"{self.payment["total_amount"]} {self.payment["currency"]}")
+                st.write("De plată:")
+                st.write(f"{self.payment["pending_amount"]} {self.payment["currency"]}")
 
-            c5, c6, = st.columns(2)
+            c5, c6 = st.columns(2)
             with c5:
                 selected_template = st.selectbox(
                     "Șablon",
@@ -51,11 +53,16 @@ class InvoicePaymentCard:
                     ].iloc[0],
                 )[0]
             with c6:
-                if not self.saved:
-                    st.write("")
-                    st.write("")
-                    st.button("Procesează", key=self.unique_id + self.payment["serial_number"], on_click=self.save_payment)
-                else:
-                    st.write("")
-                    st.write("")
-                    st.write("Procesare efectuată!")
+
+                sc1, sc2 = st.columns(2)
+                with sc1:
+                    self.amount_to_pay = st.number_input("Sumă", key=self.unique_id + "amount")
+                with sc2:
+                    if self.amount_to_pay <= self.payment["amount_due"]:
+                        st.write("")
+                        st.write("")
+                        st.button("Procesează", key=self.unique_id + str(self.payment["id"]), on_click=self.save_payment)
+                    else:
+                        st.warning("Suma introdusă este mai mare decât suma de plată!")
+
+            st.write(f"de o=plată: {self.amount_to_pay} {self.payment["currency"]}")

@@ -13,6 +13,7 @@ INVENTORY_PATH = "/inventories"
 ITEMS_PATH = "/items"
 
 INVOICES_PATH = "/invoices"
+PAYMENTS_PATH = "/payments"
 
 TRANSACTION_TEMPLATES_PATH = "/transaction-group-templates/"
 TRANSACTION_PATH = "/transactions"

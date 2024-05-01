@@ -5,7 +5,7 @@ from components.invoice_item_form import InvoiceItemForm
 
 
 class InflowInvoiceForm:
-    def __init__(self, suppliers, client, available_inventories, available_templates):
+    def __init__(self, suppliers, client):
         self.unique_id = uuid.uuid4().hex
         self.suppliers = suppliers
         self.invoice_id = None
@@ -23,10 +23,11 @@ class InflowInvoiceForm:
         self.issuer_name = None
 
         self.inventory_items = []
-        self.available_inventories = available_inventories
-        self.available_templates = available_templates
+        self.available_inventories = (st.session_state.available_templates,)
+        self.available_templates = st.session_state.available_templates
 
     def to_dict(self):
+
         invoice_data_dict = {
             "serial_number": self.serial_number,
             "invoice_date": self.invoice_date.strftime("%Y-%m-%d"),
@@ -35,9 +36,12 @@ class InflowInvoiceForm:
             "client_id": int(self.client),
             "currency": self.currency,
             "amount": round(float(self.amount), 2),
+            "invoice_type": "primită",
+            "payment_type": "plată",
             "vat_amount": round(float(self.vat_amount), 2),
             "issuer_name": self.issuer_name,
-            "invoice_type": "plată",
+            "amount_due": round(float(self.amount), 2)
+            + round(float(self.vat_amount), 2),
         }
 
         for key, value in invoice_data_dict.items():

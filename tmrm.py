@@ -5,6 +5,7 @@ import api_client.projects as projects_api
 from st_pages import Page, show_pages, add_page_title, Section
 from api.client import Client
 
+st.image("""resources\\header.png""")
 
 if "selected_project" not in st.session_state:
     st.session_state["selected_project"] = None
@@ -83,3 +84,29 @@ if not st.session_state["projects"].empty:
         if st.button("Selectează"):
             st.info(f"Proiect selectat")
             print(f"Selected project: {st.session_state.selected_project.id}")
+
+footer = """<style>
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #379bb1;
+    color: black;
+    text-align: center;
+    text-align: center;
+    display: flex;          /* Activează flexbox-ul */
+    align-items: center;    /* Centrează conținutul vertical */
+    justify-content: center;/* Centrează conținutul orizontal */
+}
+
+.red-heart {
+    color: red;             /* Makes the heart red */
+}
+</style>
+
+<div class="footer">
+    <p>Dezvoltat cu <span class="red-heart">❤</span> de Georgescu Alexandru</p>
+</div>
+"""
+st.markdown(footer, unsafe_allow_html=True)
