@@ -75,8 +75,11 @@ class OrderForm:
             "currency": self.currency,
             "amount": round(float(self.amount), 2),
             "vat_amount": round(float(self.vat_amount), 2),
+            "amount_due": round(float(self.amount), 2)
+            + round(float(self.vat_amount), 2),
+            "invoice_type": "emisă",
+            "payment_type": "încasare",
             "issuer_name": self.issuer_name,
-            "invoice_type": "încasare",
         }
 
         for key, value in invoice_data_dict.items():

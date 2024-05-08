@@ -10,8 +10,10 @@ class AccountBalance:
         self.selected_project_id = selected_project
         self.url_path = f"{URL}/{self.selected_project_id}"
 
-    def fetch_current_profit_or_loss(self):
+    def fetch_current_profit_or_loss(self, balance_date):
         print(
-            f"Retrieving profit or loss from {self.url_path}/account-balance/profit-or-loss"
+            f"Retrieving profit or loss from {self.url_path}/account-balance/profit-or-loss/{balance_date}"
         )
-        return requests.get(f"{self.url_path}/account-balance/profit-or-loss").json()
+        return requests.get(
+            f"{self.url_path}/account-balance/profit-or-loss/{balance_date}"
+        ).json()

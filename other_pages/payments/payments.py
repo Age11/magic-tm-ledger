@@ -11,7 +11,7 @@ if not "selected_project" in st.session_state.keys():
 
 st.session_state["available_templates"] = pd.DataFrame(
     st.session_state.api_client.transactions.fetch_transaction_templates_by_type(
-        ["bancă", "casă"]
+        ["încasare", "plată"]
     )
 )
 

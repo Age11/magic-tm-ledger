@@ -15,7 +15,7 @@ if "api_client" not in st.session_state:
 
 st.session_state["projects"] = pd.DataFrame(projects_api.fetch_projects())
 
-add_page_title("Proiecte")
+add_page_title("Registrul Minunat")
 
 show_pages(
     [

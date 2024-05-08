@@ -116,7 +116,7 @@ class InvoiceItemForm:
                     )
                 with c3:
                     with st.container(border=True):
-                        st.write("Marjă:")
+                        st.write("Adaos comercial:")
                         if self.acquisition_price > 0 and self.sale_price > 0:
                             st.write(
                                 f"{round((self.sale_price - self.acquisition_price) / self.acquisition_price * 100, 2)}%"

@@ -37,6 +37,25 @@ class TransactionFromTemplateForm:
                 key=self.unique_id + "template",
             )
 
+            document_details = st.checkbox("Detalii document justificativ")
+            if document_details:
+                document_serial_number = st.text_input("Serie document justificativ")
+                document_details = st.text_area("Detalii document justificativ")
+                document_type = st.selectbox(
+                    "Tip document justificativ",
+                    [
+                        "Factură",
+                        "Chitanțe",
+                        "Proces-verbal",
+                        "Ordin de plată",
+                        "Contract",
+                        "Declarație bancară",
+                        "Ștat de salarii",
+                        "Notă contabilă",
+                        "Bilet la ordin",
+                    ],
+                )
+
             main_transaction = self.available_templates.loc[
                 self.available_templates["name"] == self.selected_template,
                 "main_transaction",

@@ -38,7 +38,16 @@ with st.container(border=True):
                 "description": "Descriere",
                 "details": "Detalii",
                 "tx_type": "Tip tranzacție",
+                "document_type": "Tip document",
+                "document_serial_number": "Serie document",
             }
-        ).drop(columns=["id", "owner_id", "invoice_id", "credit_amount"])
+        ).drop(columns=["id", "owner_id", "document_id", "credit_amount"])
 
         st.write(displayed_transactions)
+
+        st.header("Totaluri:")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.write(f"Total debit: {transactions.debit_amount.sum()}")
+        with c2:
+            st.write(f"Total credit: {transactions.credit_amount.sum()}")

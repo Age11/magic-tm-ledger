@@ -92,6 +92,25 @@ class TransactionForm:
                 "Detalii", self.details, key=self.unique_id + "details"
             )
 
+            document_details = st.checkbox("Detalii document justificativ")
+            if document_details:
+                document_serial_number = st.text_input("Serie document justificativ")
+                document_details = st.text_area("Detalii document justificativ")
+                document_type = st.selectbox(
+                    "Tip document justificativ",
+                    [
+                        "Factură",
+                        "Chitanțe",
+                        "Proces-verbal",
+                        "Ordin de plată",
+                        "Contract",
+                        "Declarație bancară",
+                        "Ștat de salarii",
+                        "Notă contabilă",
+                        "Bilet la ordin",
+                    ],
+                )
+
             c1, c2, c3, c4 = st.columns(4)
             with c1:
                 if st.button("Salvează"):

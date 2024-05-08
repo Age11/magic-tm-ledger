@@ -35,6 +35,12 @@ class Reports:
         return resp
 
     def close_month(self, balance_date):
+        requests.put(
+            f"{self.url_path}/transactions/generate-close-vat-transactions/{balance_date}"
+        )
+        requests.put(
+            f"{self.url_path}/transactions/generate-close-income-expenses-transactions/{balance_date}"
+        )
         return requests.put(
             f"{self.url_path}/account-balance/close/{balance_date}"
         ).json()
