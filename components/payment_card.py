@@ -23,10 +23,11 @@ class PaymentCard:
 
     def render(self):
         with st.container(border=True):
+            st.write(f"Generată de: {self.payment["details"]}")
             c1, c2, c3, c4 = st.columns(4)
             with c1:
                 st.write("Plata:")
-                st.write(self.payment["id"])
+                st.write(f"Id-{self.payment["id"]}")
             with c2:
                 st.write("Scadența:")
                 st.write(self.payment["due_date"])
@@ -64,5 +65,3 @@ class PaymentCard:
                         st.button("Procesează", key=self.unique_id + str(self.payment["id"]), on_click=self.save_payment)
                     else:
                         st.warning("Suma introdusă este mai mare decât suma de plată!")
-
-            st.write(f"de o=plată: {self.amount_to_pay} {self.payment["currency"]}")

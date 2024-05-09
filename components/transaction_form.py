@@ -3,6 +3,7 @@ import uuid
 import streamlit as st
 from account_plan import account_plan
 from api_client.transaction import create_transaction
+from components.create_payment_form import CreatePaymentForm
 
 
 class TransactionForm:
@@ -18,6 +19,17 @@ class TransactionForm:
         self.details = None
         self.tx_type = None
 
+        self.document_serial_number = "N/A"
+        self.document_type = "N/A"
+
+        self.create_payment_form = None
+
+        self.saved = False
+        self.transaction = None
+        self.payment_details = False
+
+        self.document_details = False
+
     def to_dict(self):
         return {
             "debit_account": self.debit_account,
@@ -28,7 +40,41 @@ class TransactionForm:
             "transaction_date": self.transaction_date.strftime("%Y-%m-%d"),
             "details": self.details,
             "tx_type": self.tx_type,
+            "document_serial_number": self.document_serial_number,
+            "document_type": self.document_type,
         }
+
+    def save(self):
+        if all(
+            [
+                self.debit_account,
+                self.credit_account,
+                self.debit_amount,
+                self.currency,
+                self.transaction_date,
+                self.tx_type,
+                self.details,
+                self.document_serial_number,
+                self.document_type,
+            ]
+        ):
+            print("Tranzacție salvată")
+            st.session_state["created_tx_id"] = (
+                create_transaction(
+                    project_id=st.session_state["selected_project"]["id"],
+                    transaction_data=self.to_dict(),
+                )
+                .headers["location"]
+                .split("/")[-1]
+            )
+            self.saved = True
+        else:
+            st.error("Completează toate câmpurile")
+
+    def reset(self):
+        self.__init__()
+        st.session_state["tx_create_payment_form"] = []
+        print("tried to reset")
 
     def render(self):
         with st.container(border=True):
@@ -88,49 +134,71 @@ class TransactionForm:
                 index=0,
                 key=self.unique_id + "tx_type",
             )
+
             self.details = st.text_area(
                 "Detalii", self.details, key=self.unique_id + "details"
             )
 
-            document_details = st.checkbox("Detalii document justificativ")
-            if document_details:
-                document_serial_number = st.text_input("Serie document justificativ")
-                document_details = st.text_area("Detalii document justificativ")
-                document_type = st.selectbox(
+            self.document_details = st.checkbox("Detalii document justificativ")
+            if self.document_details:
+                self.document_serial_number = st.text_input(
+                    "Serie document justificativ"
+                )
+                self.document_type = st.selectbox(
                     "Tip document justificativ",
                     [
-                        "Factură",
-                        "Chitanțe",
-                        "Proces-verbal",
-                        "Ordin de plată",
-                        "Contract",
-                        "Declarație bancară",
-                        "Ștat de salarii",
-                        "Notă contabilă",
-                        "Bilet la ordin",
+                        "factură",
+                        "ștat de plată",
+                        "proces-verbal",
+                        "OP",
+                        "contract",
+                        "notă contabilă",
+                        "bilet la ordin",
+                        "chitanță",
+                        "declarație bancară",
+                        "bon de consum",
+                        "extras bancar",
                     ],
+                    index=0,
+                    key=self.unique_id + "document_type",
                 )
 
             c1, c2, c3, c4 = st.columns(4)
             with c1:
-                if st.button("Salvează"):
-                    if all(
-                        [
-                            self.debit_account,
-                            self.credit_account,
-                            self.debit_amount,
-                            self.currency,
-                            self.transaction_date,
-                        ]
-                    ):
-                        print("Tranzacție salvată")
-                        create_transaction(
-                            project_id=st.session_state["selected_project"]["id"],
-                            transaction_data=self.to_dict(),
-                        )
-                        st.success("Tranzacție salvată")
-                    else:
-                        st.error("Toate câmpurile sunt obligatorii")
+                if self.saved:
+                    st.success("Tranzacție salvată")
+                    payment_details = st.checkbox("Adaugă detalii de plată")
+                    if payment_details:
+                        if "tx_create_payment_form" not in st.session_state.keys():
+
+                            st.session_state["tx_create_payment_form"] = []
+                            print("Create the thig")
+                        if (
+                            "created_tx_id" in st.session_state.keys()
+                            and len(st.session_state["tx_create_payment_form"]) == 0
+                        ):
+                            st.session_state["tx_create_payment_form"].append(
+                                CreatePaymentForm(
+                                    transaction_id=st.session_state.created_tx_id
+                                )
+                            )
+                            print("added foooorm")
+
+                else:
+                    st.button(
+                        "Salvează",
+                        key=self.unique_id + "svbtn",
+                        on_click=lambda: self.save(),
+                    )
 
             with c4:
-                st.button("Resetează", on_click=lambda: self.__init__())
+                st.button(
+                    "Resetează formular",
+                    key=self.unique_id + "rstbtn",
+                    on_click=lambda: self.reset(),
+                )
+
+            if "tx_create_payment_form" in st.session_state.keys():
+                print("should fucking render")
+                for form in st.session_state.tx_create_payment_form:
+                    form.render()

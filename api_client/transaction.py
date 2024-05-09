@@ -7,12 +7,15 @@ def create_transaction(project_id, transaction_data):
     return requests.post(f"{URL}/{project_id}/transactions", json=transaction_data)
 
 
-def create_transaction_from_template(project_id, transaction_template_id, amount, date):
+def create_transaction_from_template(
+    project_id, transaction_template_id, amount, date, doc_sn
+):
     return requests.post(
         f"{URL}/{project_id}{TRANSACTION_TEMPLATES_PATH}/{transaction_template_id}/use-template",
         json={
             "amount": amount,
             "transaction_date": date,
+            "document_serial_number": doc_sn,
         },
     )
 

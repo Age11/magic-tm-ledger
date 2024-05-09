@@ -28,12 +28,26 @@ class Payments:
         print(f"Retrieved {payable}")
         return payable
 
+    def fetch_all_payments_by_date(self, payment_date):
+        print(
+            f"Retrieving payments from {self.url_path}{PAYMENTS_PATH}/{payment_date}/all"
+        )
+        payments = requests.get(
+            f"{self.url_path}{PAYMENTS_PATH}/{payment_date}/all"
+        ).json()
+        print(f"Retrieved {payments}")
+        return payments
+
     def solve_payment(self, payment_id, amount):
         print(f"Solving payment for invoice {payment_id}")
         requests.put(
             f"{self.url_path}{PAYMENTS_PATH}/{payment_id}/pay",
             json={"amount": amount},
         )
+
+    def create_payment(self, payment_data):
+        print(f"Creating payment with the following data: {payment_data}")
+        return requests.post(f"{self.url_path}{PAYMENTS_PATH}", json=payment_data)
 
     def fetch_available_payment_dates(self):
         return requests.get(f"{self.url_path}{PAYMENTS_PATH}/available-dates").json()
