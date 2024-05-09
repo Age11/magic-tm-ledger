@@ -12,11 +12,18 @@ from components.transaction_card import TransactionCard
 class InvoiceItemForm:
 
     def __init__(
-        self, project_id, invoice_id, invoice_date, invoice_currency, is_order=False
+        self,
+        project_id,
+        invoice_id,
+        invoice_date,
+        invoice_currency,
+        invoice_sn,
+        is_order=False,
     ):
         self.project_id = project_id
         self.unique_id = uuid.uuid4().hex
         self.invoice_id = invoice_id
+        self.invoice_sn = invoice_sn
         self.invoice_date = invoice_date
         self.currency = invoice_currency
         self.is_order = is_order
@@ -68,6 +75,8 @@ class InvoiceItemForm:
                     else self.quantity * self.acquisition_price
                 ),
                 date=self.invoice_date,
+                doc_sn=self.invoice_sn,
+                doc_id=self.invoice_id,
             )
             self.template_saved = True
 

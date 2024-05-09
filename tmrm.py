@@ -96,19 +96,24 @@ footer = """<style>
     background-color: #379bb1;
     color: black;
     text-align: center;
-    text-align: center;
-    display: flex;          /* Activează flexbox-ul */
-    align-items: center;    /* Centrează conținutul vertical */
-    justify-content: center;/* Centrează conținutul orizontal */
+    display: flex;              /* Activează flexbox-ul */
+    flex-direction: column;     /* Stacks children vertically */
+    align-items: center;        /* Centrează conținutul vertical */
+    justify-content: center;    /* Centrează conținutul orizontal */
+}
+
+.footer p {
+    margin: 1px 0;  /* Reduces the top and bottom margin to 5px */
 }
 
 .red-heart {
-    color: red;             /* Makes the heart red */
+    color: red;                 /* Makes the heart red */
 }
 </style>
 
 <div class="footer">
-    <p>Dezvoltat cu <span class="red-heart">❤</span> de Georgescu Alexandru</p>
+    <p>Dezvoltat cu <span class="red-heart">❤</span> de student Georgescu, CIG 3 ID Alexandru</p>
+    <p>Coordonator științific, Conf. Univ. dr. Calotă Traian-Ovidiu</p>
 </div>
 """
 st.markdown(footer, unsafe_allow_html=True)

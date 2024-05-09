@@ -18,6 +18,27 @@ class Invoices:
         print(f"Retrieved {invoices}")
         return invoices
 
+    def fetch_incoming_by_date(self, invoice_date):
+        print(f"retrieving invoices from {self.url_path}{INVOICES_PATH}/{invoice_date}/incoming")
+        invoices = requests.get(f"{self.url_path}{INVOICES_PATH}/{invoice_date}/incoming").json()
+        print(f"Retrieved {invoices}")
+        return invoices
+
+    def fetch_outgoing_by_date(self, invoice_date):
+        print(f"retrieving invoices from {self.url_path}{INVOICES_PATH}/{invoice_date}/outgoing")
+        invoices = requests.get(f"{self.url_path}{INVOICES_PATH}/{invoice_date}/outgoing").json()
+        print(f"Retrieved {invoices}")
+        return invoices
+
+    def fetch_all_by_date(self, invoice_date):
+        print(f"retrieving invoices from {self.url_path}{INVOICES_PATH}/{invoice_date}/all")
+        invoices = requests.get(f"{self.url_path}{INVOICES_PATH}/{invoice_date}/all").json()
+        print(f"Retrieved {invoices}")
+        return invoices
+
+    def fetch_available_dates(self):
+        return requests.get(f"{self.url_path}{INVOICES_PATH}/invoice-dates").json()
+
     def create(self, invoice_data):
         print(f"Posting invoice: {self.url_path}{INVOICES_PATH}")
         print(invoice_data)

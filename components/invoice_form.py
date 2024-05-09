@@ -96,6 +96,7 @@ class InflowInvoiceForm:
             InvoiceItemForm(
                 project_id=st.session_state.selected_project["id"],
                 invoice_id=self.invoice_id,
+                invoice_sn=self.serial_number,
                 invoice_date=self.invoice_date.strftime("%Y-%m-%d"),
                 invoice_currency=self.currency,
             )

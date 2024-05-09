@@ -13,7 +13,9 @@ class Transactions:
         print(f"Creating transaction with the following data: {transaction_data}")
         return requests.post(f"{self.url_path}/transactions", json=transaction_data)
 
-    def create_transaction_from_template(self, transaction_template_id, amount, date):
+    def create_transaction_from_template(
+        self, transaction_template_id, amount, date, doc_sn="N/A", doc_id=-1
+    ):
         print(
             f"Post at {self.url_path}{TRANSACTION_TEMPLATES_PATH}{transaction_template_id}/use-template"
         )
@@ -22,6 +24,8 @@ class Transactions:
             json={
                 "amount": amount,
                 "transaction_date": date,
+                "document_serial_number": doc_sn,
+                "document_id": doc_id,
             },
         )
 

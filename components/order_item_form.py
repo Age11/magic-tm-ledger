@@ -1,3 +1,4 @@
+import math
 import uuid
 from datetime import datetime
 
@@ -10,13 +11,15 @@ from streamlit_searchbox import st_searchbox
 from components.show_transaction_template_form import ShowTemplateForm
 from components.transaction_card import TransactionCard
 
+
 class OrderItemForm:
 
     def __init__(
-        self,
-        project_id,
-        order_date,
-        invoice_id,
+            self,
+            project_id,
+            order_date,
+            invoice_id,
+            invoice_sn,
     ):
         self.project_id = project_id
         self.unique_id = uuid.uuid4().hex
@@ -30,7 +33,6 @@ class OrderItemForm:
         self.available_templates = st.session_state.available_templates
         self.secondary_templates = st.session_state.secondary_templates
 
-
         self.name = ""
         self.description = ""
         self.measurement_unit = ""
@@ -40,7 +42,9 @@ class OrderItemForm:
         self.units_to_decrease = 0
         self.order_date = order_date.strftime("%Y-%m-%d")
         self.invoice_id = invoice_id
+        self.invoice_sn = invoice_sn
 
+        self.selected_item = None
         self.total_sale_price = 0
         self.total_acquisition_cost = 0
 
@@ -50,14 +54,15 @@ class OrderItemForm:
         return all(self.to_dict().values())
 
     def save(self):
-        st.session_state.api_client.inventories.decrease_stock(item_id=self.selected_inventory_items['id'].iloc[0], inventory_id=self.inventory_id, quantity=self.units_to_decrease, invoice_id=self.invoice_id)
+        st.session_state.api_client.inventories.decrease_stock(item_id=self.selected_item['id'],
+                                                               inventory_id=self.inventory_id,
+                                                               quantity=self.units_to_decrease,
+                                                               invoice_id=self.invoice_id)
         self.saved = True
         if self.use_main_template:
             self.main_template.save()
         if self.use_second_template:
             self.second_template.save()
-
-
 
     def search_inventory(self, searchterm):
         print(searchterm)
@@ -82,9 +87,10 @@ class OrderItemForm:
                     self.available_inventories["name"] == self.selected_name
                     ]["id"].iloc[0]
 
-                self.selected_inventory_items = pd.DataFrame(st.session_state.api_client.inventories.fetch_inventory_items(
-                    self.inventory_id
-                ))
+                self.selected_inventory_items = pd.DataFrame(
+                    st.session_state.api_client.inventories.fetch_inventory_items(
+                        self.inventory_id
+                    ))
 
             if self.selected_inventory_items is not None:
                 selected_value = st_searchbox(
@@ -93,41 +99,63 @@ class OrderItemForm:
                     placeholder="Caută produs în gestiunea selectată",
                 )
 
+
             if selected_value:
-                selected_item = self.selected_inventory_items[
+                self.selected_item = self.selected_inventory_items[
                     self.selected_inventory_items["name"] == selected_value
-                ].iloc[0]
+                    ].iloc[0]
                 if self.quantity is None:
-                    self.item_quantity = selected_item["quantity"]
+                    self.item_quantity = self.selected_item["quantity"]
 
                 with st.container(border=True):
-                    st.write(f"Detalii articol: {selected_item["description"]}")
-                    st.write(f"Unitate de măsură: {selected_item["measurement_unit"]}")
-                    st.write(f"Preț unitar de achiziție: {selected_item["acquisition_price"]}")
-                    st.write(f"Rată TVA: {selected_item["vat_rate"]}")
+                    st.write(f"Detalii articol: {self.selected_item["description"]}")
+                    st.write(f"Unitate de măsură: {self.selected_item["measurement_unit"]}")
+                    st.write(f"Preț unitar de achiziție: {self.selected_item["acquisition_price"]}")
+                    st.write(f"Rată TVA: {self.selected_item["vat_rate"]}")
 
                 col1, col2, col3 = st.columns(3)
                 with col2:
-                    st.write("Cantitate de scăzut")
+                    if math.isnan(self.selected_item["sale_price"]):
+                        st.write("Preț de vânzare")
+                        self.selected_item['sale_price'] = st.number_input(
+                            "Preț de vânzare", key=self.unique_id + "sale_price"
+                        )
+                    else:
+                        modify_price = st.checkbox("modifică preț de vânzare", key=self.unique_id + "add_sale_price")
+                        if modify_price:
+                            self.selected_item['sale_price'] = st.number_input(
+                                "Preț de vânzare", key=self.unique_id + "sale_price"
+                            )
+                        else:
+                            st.write(f"Preț de vânzare: {self.selected_item['sale_price']}")
+
+                    st.write("Cantitate vândută")
                     self.units_to_decrease = st.number_input(
                         "Cantitate", key=self.unique_id + "quantity"
                     )
-                    self.total_sale_price = round(self.units_to_decrease * selected_item['sale_price'], 2)
-                    self.total_acquisition_cost = round(self.units_to_decrease * selected_item['acquisition_price'], 2)
+                    self.total_sale_price = round(self.units_to_decrease * self.selected_item['sale_price'], 2)
+                    self.total_acquisition_cost = round(self.units_to_decrease * self.selected_item['acquisition_price'], 2)
                 with col1:
                     st.write("Stoc rămas")
                     st.write(f"Cantitate: {self.item_quantity - self.units_to_decrease}")
-                    st.write(f"Pret total achiziție: {round((self.item_quantity - self.units_to_decrease) * selected_item['acquisition_price'],2)}")
+                    st.write(
+                        f"Pret total achiziție: {round((self.item_quantity - self.units_to_decrease) * self.selected_item['acquisition_price'], 2)}")
                 with col3:
                     with st.container(border=True):
                         st.write("Descărcare")
                         st.write(f"Cantitate: {self.units_to_decrease}")
-                        st.write(f"Preț total achiziție: {self.units_to_decrease * selected_item['acquisition_price']}")
-                        st.write(f"Preț unitar vânzare: {selected_item['sale_price']}")
-                        st.write(f"Preț total vânzare: {round(self.units_to_decrease * selected_item['sale_price'],2)}")
-                        st.write(f"Rată TVA: {selected_item['vat_rate']}")
-                        st.write(f"Total TVA: {round(self.units_to_decrease * selected_item['acquisition_price'] * selected_item['vat_rate'] / 100, 2)}")
-                        st.write(f"Total cu TVA: {round(self.units_to_decrease * selected_item['sale_price'] + self.units_to_decrease * selected_item['sale_price'] * selected_item['vat_rate'] / 100,2)}")
+                        st.write(f"Preț total achiziție: {self.units_to_decrease * self.selected_item['acquisition_price']}")
+                        if not math.isnan(self.selected_item['sale_price']):
+                            st.write(f"Preț unitar vânzare: {self.selected_item['sale_price']}")
+                            st.write(
+                                f"Preț total vânzare: {round(self.units_to_decrease * self.selected_item['sale_price'], 2)}")
+                        else:
+                            st.error("Articolul nu are preț de vânzare")
+
+                        st.write(f"Rată TVA: {self.selected_item['vat_rate']}")
+                        st.write(f"Total TVA: {round(self.total_sale_price * self.selected_item['vat_rate'] / 100, 2)}")
+                        st.write(
+                            f"Total cu TVA: {round(self.total_sale_price + self.total_sale_price * self.selected_item['vat_rate'] / 100, 2)}")
 
             self.use_main_template = st.checkbox(
                 "Selectează tratament contabil predefinit",
@@ -135,7 +163,9 @@ class OrderItemForm:
             )
 
             if self.use_main_template:
-                self.main_template = ShowTemplateForm(available_templates=self.available_templates, date=self.order_date, amount=self.total_sale_price)
+                self.main_template = ShowTemplateForm(available_templates=self.available_templates,
+                                                      date=self.order_date, amount=self.total_sale_price,
+                                                      doc_sn=self.invoice_sn, doc_id=self.invoice_id)
                 self.main_template.render()
 
             self.use_second_template = st.checkbox(
@@ -144,9 +174,10 @@ class OrderItemForm:
             )
 
             if self.use_second_template:
-                self.second_template = ShowTemplateForm(available_templates=self.secondary_templates, date=self.order_date, amount=self.total_acquisition_cost)
+                self.second_template = ShowTemplateForm(available_templates=self.secondary_templates,
+                                                        date=self.order_date, amount=self.total_acquisition_cost,
+                                                        doc_sn=self.invoice_sn, doc_id=self.invoice_id)
                 self.second_template.render()
-
 
             if not self.saved:
                 st.button("Salvează modificare", key=self.unique_id + "save", on_click=self.save)

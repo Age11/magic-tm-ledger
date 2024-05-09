@@ -7,17 +7,21 @@ from components.transaction_card import TransactionCard
 
 class ShowTemplateForm:
 
-    def __init__(self, available_templates, date, amount):
+    def __init__(self, available_templates, date, amount, doc_sn, doc_id):
         self.available_templates = available_templates
         self.unique_id = uuid.uuid4().hex
         self.date = date
         self.amount = amount
+        self.doc_sn = doc_sn
+        self.doc_id = doc_id
 
     def save(self):
         st.session_state.api_client.transactions.create_transaction_from_template(
             transaction_template_id=self.selected_template_id,
             amount=self.amount,
             date=self.date,
+            doc_sn=self.doc_sn,
+            doc_id=self.doc_id,
         )
 
     def render(self):

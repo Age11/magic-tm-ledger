@@ -28,7 +28,12 @@ class OrderForm:
 
     def append_item_to_order(self):
         self.order_items.append(
-            OrderItemForm(self.project_id, self.invoice_date, self.invoice_id)
+            OrderItemForm(
+                self.project_id,
+                self.invoice_date,
+                self.invoice_id,
+                self.serial_number,
+            )
         )
         print(len(self.order_items))
         print(self.order_items)

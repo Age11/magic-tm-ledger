@@ -12,7 +12,7 @@ st.session_state["payment_dates"] = (
 )
 
 st.session_state["selected_date"] = st.selectbox(
-    "Selectează un jurnal de cumpărări", st.session_state.payment_dates, index=0
+    "Selectează luna", st.session_state.payment_dates, index=0
 )
 
 st.session_state["all_payments"] = (
