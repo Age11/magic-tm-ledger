@@ -42,5 +42,9 @@ class TransactionCard:
                         st.write(credit_name)
             with col4:
                 if self.operation is not None:
-                    self.amount = eval(str(self.amount) + self.operation)
+                    if "X" in self.operation:
+                        op = self.operation.replace("X", str(self.amount))
+                    else:
+                        op = str(self.amount) + self.operation
+                    self.amount = eval(op)
                 st.write(f"{self.amount} {self.currency}")

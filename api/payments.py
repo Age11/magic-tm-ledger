@@ -51,3 +51,13 @@ class Payments:
 
     def fetch_available_payment_dates(self):
         return requests.get(f"{self.url_path}{PAYMENTS_PATH}/available-dates").json()
+
+    def fetch_payments_journal_by_date(self, payment_date):
+        print(
+            f"Retrieving payments from {self.url_path}{PAYMENTS_PATH}/{payment_date}/payment-journal"
+        )
+        payments = requests.get(
+            f"{self.url_path}{PAYMENTS_PATH}/{payment_date}/payment-journal"
+        ).json()
+        print(f"Retrieved {payments}")
+        return payments

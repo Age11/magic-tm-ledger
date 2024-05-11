@@ -1,8 +1,5 @@
 import streamlit as st
 
-st.title("Raportare Profit sau Pierdere")
-
-
 with st.container(border=True):
     st.title("Profit sau pierdere")
 
@@ -22,4 +19,5 @@ with st.container(border=True):
     result = st.session_state.api_client.account_balance.fetch_current_profit_or_loss(
         st.session_state.selected_date
     )
-    st.write(result)
+    with st.container(border=True):
+        st.header(result)

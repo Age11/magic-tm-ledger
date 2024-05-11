@@ -7,7 +7,7 @@ if not "selected_project" in st.session_state.keys():
     st.session_state["selected_project"] = None
 
 with st.container(border=True):
-    st.title("Jurnal Tranzacții")
+    st.title("Registru Jurnal")
 
     if "selected_project" not in st.session_state:
         st.session_state["selected_project"] = None
@@ -48,6 +48,6 @@ with st.container(border=True):
         st.header("Totaluri:")
         c1, c2 = st.columns(2)
         with c1:
-            st.write(f"Total debit: {transactions.debit_amount.sum()}")
+            st.write(f"Total debit: {round(transactions.debit_amount.sum(),2)}")
         with c2:
-            st.write(f"Total credit: {transactions.credit_amount.sum()}")
+            st.write(f"Total credit: {round(transactions.credit_amount.sum(),2)}")

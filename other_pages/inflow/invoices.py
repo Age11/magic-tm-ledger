@@ -49,7 +49,7 @@ if not st.session_state.selected_project is None:
     else:
         st.write("Nu există facturi")
 
-    st.header("Facturi primite")
+    st.header("Facturi emise")
     if not out_invs.empty:
         st.write(
             out_invs.rename(

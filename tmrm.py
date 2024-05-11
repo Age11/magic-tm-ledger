@@ -31,7 +31,7 @@ show_pages(
         Section(name="Casă / Bancă", icon="💳"),
         Page("other_pages/payments/pending_payments.py", "Plați restante"),
         Page("other_pages/payments/create_payment.py", "Creează Plăți"),
-        Page("other_pages/payments/payments.py", "Plăți"),
+        Page("other_pages/payments/payments.py", "Jurnal Plăți"),
         Section(name="Operațiuni stocuri", icon="📦"),
         Page("other_pages/inventory/inventory.py", "Gestiuni"),
         Page("other_pages/inventory/inventory_create.py", "Creează Gestiune"),
@@ -45,7 +45,7 @@ show_pages(
         Section(name="Articole contabile", icon="🖊️"),
         Page("other_pages/operations/accounting_operations.py", "Articole contabile"),
         Section(name="Rapoarte", icon="📚"),
-        Page("other_pages/reporting/transaction_ledger.py", "Registru Tranzacții"),
+        Page("other_pages/reporting/transaction_ledger.py", "Registru Jurnal"),
         Page("other_pages/reporting/general_ledger.py", "Cartea Mare"),
         Page("other_pages/reporting/account_balance.py", "Balanță de verificare"),
         Page("other_pages/reporting/buying_ledger.py", "Jurnal Cumpărări"),
@@ -112,7 +112,7 @@ footer = """<style>
 </style>
 
 <div class="footer">
-    <p>Dezvoltat cu <span class="red-heart">❤</span> de student Georgescu, CIG 3 ID Alexandru</p>
+    <p>Dezvoltat cu <span class="red-heart">❤</span> de student Georgescu Alexandru, CIG ID</p>
     <p>Coordonator științific, Conf. Univ. dr. Calotă Traian-Ovidiu</p>
 </div>
 """

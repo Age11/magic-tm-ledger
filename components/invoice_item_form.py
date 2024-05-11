@@ -54,11 +54,25 @@ class InvoiceItemForm:
         self.total_sale_price = 0
 
     def complete(self):
-        return all(self.to_dict().values())
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        print(self.to_dict())
+        return all(
+            [
+                "name",
+                "description",
+                "measurement_unit",
+                "quantity",
+                "acquisition_price",
+                "vat_rate",
+                "inventory_id",
+                "invoice_id",
+            ]
+        )
 
     def save(self):
 
         if self.complete():
+            print("SAAAAVEEEEE")
             st.session_state.api_client.inventories.create_inventory_item(
                 self.inventory_id, self.to_dict()
             )
