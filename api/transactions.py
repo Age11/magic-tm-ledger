@@ -41,10 +41,10 @@ class Transactions:
 
     def fetch_transaction_templates_by_type(self, tx_type):
         print(
-            f"retrieving inflow transaction templates from {self.url_path}{TRANSACTION_TEMPLATES_PATH}/by-type",
+            f"retrieving inflow transaction templates from {self.url_path}{TRANSACTION_TEMPLATES_PATH}by-type",
         )
         transaction_templates = requests.get(
-            f"{self.url_path}{TRANSACTION_TEMPLATES_PATH}/by-type",
+            f"{self.url_path}{TRANSACTION_TEMPLATES_PATH}by-type",
             json={"tx_type": tx_type},
         ).json()
         print(f"Retrieved {transaction_templates}")

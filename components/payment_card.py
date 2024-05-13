@@ -10,9 +10,10 @@ class PaymentCard:
         self.unique_id = uuid.uuid4().hex
         self.saved = False
         self.amount_to_pay = payment["amount_due"]
+        self.installment_type = None
 
     def save_payment(self):
-        st.session_state.api_client.payments.solve_payment(self.payment["id"], self.amount_to_pay)
+        st.session_state.api_client.payments.solve_payment(self.payment["id"], self.amount_to_pay, self.installment_type)
         st.session_state.api_client.transactions.create_transaction_from_template(
             self.selected_template_id,
             self.amount_to_pay,
@@ -60,8 +61,12 @@ class PaymentCard:
                     self.amount_to_pay = st.number_input("Sumă", key=self.unique_id + "amount")
                 with sc2:
                     if self.amount_to_pay <= self.payment["amount_due"]:
-                        st.write("")
-                        st.write("")
+                        self.installment_type = st.selectbox(
+                            "Tipul plății",
+                            [ "bancă", "casă"],
+                            index=0,
+                            key=self.unique_id + "installment_type",
+                        )
                         st.button("Procesează", key=self.unique_id + str(self.payment["id"]), on_click=self.save_payment)
                     else:
                         st.warning("Suma introdusă este mai mare decât suma de plată!")

@@ -38,11 +38,11 @@ class Payments:
         print(f"Retrieved {payments}")
         return payments
 
-    def solve_payment(self, payment_id, amount):
+    def solve_payment(self, payment_id, amount, installment_type):
         print(f"Solving payment for invoice {payment_id}")
         requests.put(
             f"{self.url_path}{PAYMENTS_PATH}/{payment_id}/pay",
-            json={"amount": amount},
+            json={"amount": amount, "installment_type": installment_type},
         )
 
     def create_payment(self, payment_data):

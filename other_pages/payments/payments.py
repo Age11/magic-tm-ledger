@@ -82,9 +82,9 @@ if st.session_state.selected_project is not None:
                 )
         c1, c2 = st.columns(2)
         with c1:
-            st.write(f"Total încasări: {rec_bank['amount'].sum()}")
-        with c2:
             st.write(f"Total plăți: {pay_bank['amount'].sum()}")
+        with c2:
+            st.write(f"Total încasări: {rec_bank['amount'].sum()}")
 
         st.header("Jurnal de casă")
         c1, c2 = st.columns(2)
@@ -130,6 +130,7 @@ if st.session_state.selected_project is not None:
                 )
         c1, c2 = st.columns(2)
         with c1:
-            st.write(f"Total încasări: {rec_cash['amount'].sum()}")
-        with c2:
             st.write(f"Total plăți: {pay_cash['amount'].sum()}")
+
+        with c2:
+            st.write(f"Total încasări: {rec_cash['amount'].sum()}")
